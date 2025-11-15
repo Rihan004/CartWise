@@ -12,11 +12,11 @@ app.use(express.json());
 
 const expenseRoutes = require("./src/routes/expenseRoutes.js");
 const groceryRoutes = require("./src/routes/groceryRoutes.js");
-
+const recommendRoutes = require("./src/routes/recommendRoutes.js");
 
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/groceries", groceryRoutes);
-
+app.use("/api/recommend", recommendRoutes);
 
 // Simple test route
 app.get("/", (req, res) => {
