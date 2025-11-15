@@ -1,21 +1,61 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Menu, X } from "lucide-react"; // modern icons (install via `npm i lucide-react`)
 
 function Navbar() {
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const linkClasses = (path) =>
+    `px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+      location.pathname === path
+        ? "bg-white text-indigo-700 shadow-md scale-105"
+        : "text-white hover:bg-indigo-500 hover:scale-105"
+    }`;
+
   return (
-    <nav className="bg-indigo-600 text-white px-6 py-4 flex justify-between items-center shadow-md">
-      {/* Company Name */}
-      <div className="text-2xl font-bold">
+    <nav className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-4 flex justify-between items-center shadow-lg relative">
+      {/* Brand */}
+      <div className="text-2xl font-extrabold tracking-wide drop-shadow-md">
         LetsTrackIt
       </div>
 
-      {/* Profile Logo */}
-      <div>
-        <img
-          src="https://i.pravatar.cc/40" // placeholder avatar
-          alt="Profile"
-          className="w-10 h-10 rounded-full border-2 border-white"
-        />
+      {/* Desktop Nav */}
+      <div className="hidden md:flex items-center gap-6">
+        <Link to="/" className={linkClasses("/")}>
+          Expenses
+        </Link>
+        <Link to="/grocery" className={linkClasses("/groceries")}>
+          Groceries
+        </Link>
+        <div className="ml-3">
+          <img
+            src="https://i.pravatar.cc/40"
+            alt="Profile"
+            className="w-10 h-10 rounded-full border-2 border-white shadow-md"
+          />
+        </div>
       </div>
+
+      {/* Mobile Menu Button */}
+      <button
+        className="md:hidden p-2 hover:bg-indigo-500 rounded-lg transition"
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
+        {menuOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
+      {/* Mobile Dropdown */}
+      {menuOpen && (
+        <div className="absolute top-full left-0 w-full bg-indigo-700 shadow-lg flex flex-col items-center py-4 space-y-3 md:hidden z-50">
+          <Link onClick={() => setMenuOpen(false)} to="/" className={linkClasses("/")}>
+            Expenses
+          </Link>
+          <Link onClick={() => setMenuOpen(false)} to="/grocery" className={linkClasses("/groceries")}>
+            Groceries
+          </Link>
+        </div>
+      )}
     </nav>
   );
 }
