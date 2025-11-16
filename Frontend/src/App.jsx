@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import ExpensePage from "./pages/ExpensePage";
 import GroceryPage from "./pages/GroceryPage";
-
+import GroceryTablePage from "./pages/GroceryTablePage";
 function App() {
   return (
     <Router>
@@ -12,6 +12,7 @@ function App() {
           <Routes>
             <Route path="/" element={<ExpensePage />} />
             <Route path="/grocery" element={<GroceryPage />} />
+            <Route path="/table-view" element={<GroceryTablePage />} />
           </Routes>
         </div>
       </div>

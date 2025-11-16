@@ -1,4 +1,4 @@
-const { addGroceryItem, getAllGroceries, deleteGroceryItem } = require("../models/groceryModel");
+const { addGroceryItem, getAllGroceries, deleteGroceryItem  , getTodayGroceriesFromDB} = require("../models/groceryModel");
 
 const addItem = async (req, res) => {
   try {
@@ -13,12 +13,24 @@ const addItem = async (req, res) => {
 
 const getItems = async (req, res) => {
   try {
-    const items = await getAllGroceries();
+    const { start, end } = req.query;
+
+    let items;
+
+    if (start && end) {
+      // 🔥 Fetch filtered data
+      items = await getAllGroceries(start, end);
+    } else {
+      // 🔥 Fetch entire list (old behaviour)
+      items = await getAllGroceries();
+    }
+
     res.json(items);
   } catch (error) {
     res.status(500).json({ message: "Error fetching items", error });
   }
 };
+
 
 const deleteItem = async (req, res) => {
   try {
@@ -30,4 +42,13 @@ const deleteItem = async (req, res) => {
   }
 };
 
-module.exports = { addItem, getItems, deleteItem };
+const getTodayGroceries = async (req, res) => {
+  try {
+    const items = await getTodayGroceriesFromDB();
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching today's groceries", err });
+  }
+};
+
+module.exports = { addItem, getItems, deleteItem , getTodayGroceries };
