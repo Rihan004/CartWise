@@ -1,8 +1,8 @@
-// app.js
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-
+const session = require("express-session");
+const passport = require("passport");
 dotenv.config();
 
 const pool = require("./src/config/db.js");
@@ -10,13 +10,29 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ➕ SESSION MIDDLEWARE (required for passport-google)
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "supersecret",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+// ➕ PASSPORT SETUP
+require("./src/config/passport.js"); // <-- you will create this file
+app.use(passport.initialize());
+app.use(passport.session());
+
 const expenseRoutes = require("./src/routes/expenseRoutes.js");
 const groceryRoutes = require("./src/routes/groceryRoutes.js");
 const recommendRoutes = require("./src/routes/recommendRoutes.js");
+const authRoutes = require("./src/routes/authRoutes.js");
 
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/groceries", groceryRoutes);
 app.use("/api/recommend", recommendRoutes);
+app.use("/api/auth", authRoutes);
 
 // Simple test route
 app.get("/", (req, res) => {
