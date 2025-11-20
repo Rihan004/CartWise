@@ -28,11 +28,14 @@ const expenseRoutes = require("./src/routes/expenseRoutes.js");
 const groceryRoutes = require("./src/routes/groceryRoutes.js");
 const recommendRoutes = require("./src/routes/recommendRoutes.js");
 const authRoutes = require("./src/routes/authRoutes.js");
+const authLocalRoutes = require("./src/routes/authLocalRoutes.js");
+
 
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/groceries", groceryRoutes);
 app.use("/api/recommend", recommendRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/auth/local", authLocalRoutes);
 
 // Simple test route
 app.get("/", (req, res) => {
