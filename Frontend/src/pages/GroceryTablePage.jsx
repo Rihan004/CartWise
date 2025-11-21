@@ -8,10 +8,16 @@ const GroceryTablePage = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
+  // ✅ Get token from localStorage
+  const token = localStorage.getItem("token");
+
   const fetchGroceries = async (query = "") => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/groceries${query}`
+        `http://localhost:5000/api/groceries${query}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }, // 🔑 Pass token
+        }
       );
       setGroceries(res.data);
     } catch (err) {

@@ -5,12 +5,12 @@ import GroceryPage from "./pages/GroceryPage";
 import GroceryTablePage from "./pages/GroceryTablePage";
 import AuthSuccess from "./pages/AuthSuccess";
 import Login from "./pages/Login";
-
+import Register from "./pages/Register";
 function Layout({ children }) {
   const location = useLocation();
 
   // Pages where navbar should be hidden
-  const hideNavbar = ["/login", "/auth/success"];
+  const hideNavbar = ["/login", "/auth/success" , "/register"];
 
   return (
     <>
@@ -26,6 +26,7 @@ function App() {
       <div className="min-h-screen bg-gray-100">
         <Layout>
           <Routes>
+            <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/auth/success" element={<AuthSuccess />} />
             <Route path="/" element={<ExpensePage />} />

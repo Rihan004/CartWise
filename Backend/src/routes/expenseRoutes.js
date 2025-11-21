@@ -2,9 +2,9 @@ const express = require("express");
 const pool = require("../config/db");
 
 const router = express.Router();
-
+const authMiddleware = require("../middleware/authMiddleware");
 // ✅ CREATE an expense
-router.post("/", async (req, res) => {
+router.post("/",  async (req, res) => {
   try {
     const { title, amount, category, date } = req.body;
     const result = await pool.query(

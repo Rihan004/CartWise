@@ -9,8 +9,8 @@ const getRecommendations = async (req, res) => {
 
   try {
     const prompt = `
-      Based on this grocery list: ${items.join(", ")},
-      suggest 5 additional grocery items that people often forget.
+      Based on this items list: ${items.join(", ")},
+      suggest 5 additional shop items that people often forget.
       For each item, also give an estimated price in your currency.
       Respond with a JSON array of objects:
       [

@@ -3,12 +3,16 @@ import axios from "axios";
 import AddGroceryForm from "../components/AddGroceryForm";
 import GroceryList from "../components/GroceryList";
 import AIRecommendations from "../components/AIRecommendations";
+
 const GroceryPage = () => {
   const [groceries, setGroceries] = useState([]);
+  const token = localStorage.getItem("token"); // 🔑 token
 
   const fetchGroceries = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/groceries/today");
+      const res = await axios.get("http://localhost:5000/api/groceries/today", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setGroceries(res.data);
     } catch (err) {
       console.error("Error fetching groceries:", err);
@@ -21,19 +25,23 @@ const GroceryPage = () => {
 
   const handleAdd = async (item) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/groceries/add", item);
+      const res = await axios.post("http://localhost:5000/api/groceries/add", item, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setGroceries((prev) => [res.data, ...prev]);
     } catch (err) {
-      console.error(err);
+      console.error("Error adding grocery:", err);
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/groceries/${id}`);
+      await axios.delete(`http://localhost:5000/api/groceries/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setGroceries((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
-      console.error(err);
+      console.error("Error deleting grocery:", err);
     }
   };
 
@@ -43,24 +51,21 @@ const GroceryPage = () => {
         <h1 className="text-3xl sm:text-4xl font-extrabold text-center mb-8 text-indigo-700 drop-shadow-sm">
           Grocery Planner 🛒
         </h1>
+
         <div className="text-center mb-8">
           <a
             href="/table-view"
-            className=" inline-block bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold shadow-md  hover:bg-purple-700 
-            hover:shadow-lg transition-all duration-300 "
+            className="inline-block bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold shadow-md hover:bg-purple-700 hover:shadow-lg transition-all duration-300"
           >
             📊 View Full Grocery History & Estimated Costs
           </a>
         </div>
 
-        {/* Add Grocery Form */}
         <AddGroceryForm onAdd={handleAdd} />
 
         <div className="mt-8">
-          {/* Grocery List */}
           <GroceryList groceries={groceries} onDelete={handleDelete} />
           <AIRecommendations groceries={groceries} onAdd={handleAdd} />
-
         </div>
       </div>
     </div>

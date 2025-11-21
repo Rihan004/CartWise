@@ -2,19 +2,43 @@ import { useState } from "react";
 
 const AddGroceryForm = ({ onAdd }) => {
   const [form, setForm] = useState({
-    user_id: 1,
     name: "",
     quantity: "",
     cost: "",
     category: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!form.name || !form.quantity)
       return alert("Please fill all required fields");
-    onAdd(form);
-    setForm({ user_id: 1, name: "", quantity: "", cost: "", category: "" });
+
+    try {
+      // 🔑 Include token in Authorization header
+      const token = localStorage.getItem("token");
+
+      const res = await fetch("http://localhost:5000/api/groceries/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        onAdd(data); // update parent state
+        setForm({ name: "", quantity: "", cost: "", category: "" });
+      } else {
+        alert(data.message || "Failed to add grocery");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error");
+    }
   };
 
   return (

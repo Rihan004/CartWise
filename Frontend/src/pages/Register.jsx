@@ -1,38 +1,34 @@
-import { useState } from "react";
+export default function Register() {
 
-export default function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-
-    // Google Login
-    const handleGoogleLogin = () => {
-        window.location.href = "http://localhost:5000/api/auth/google";
-    };
-
-    // Email/Password Login (JWT)
-    const handleLogin = async (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
+
+        const name = e.target.name.value;
+        const email = e.target.email.value;
+        const password = e.target.password.value;
+
         try {
-            const res = await fetch("http://localhost:5000/api/auth/local/login", {
+            const res = await fetch("http://localhost:5000/api/auth/local/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ name, email, password })
             });
 
             const data = await res.json();
-            console.log(data);
-
             if (data.token) {
+                // Save token
                 localStorage.setItem("token", data.token);
-                alert("Login successful!");
                 window.location.href = "/";
             } else {
-                alert(data.error || "Login failed");
+                alert(data.error || "Registration failed");
             }
         } catch (err) {
-            console.log(err);
             alert("Server error");
         }
+    };
+
+    const handleGoogleSignup = () => {
+        window.location.href = "http://localhost:5000/api/auth/google";
     };
 
     return (
@@ -40,52 +36,50 @@ export default function Login() {
             <div className="bg-white shadow-xl p-10 rounded-2xl text-center w-full max-w-md">
 
                 <h1 className="text-3xl font-bold mb-6 text-purple-600">
-                    Welcome to CartWise
+                    Create Your Account
                 </h1>
 
-                <p className="text-gray-600 mb-6">
-                    Track your expenses & get smart recommendations — login to continue.
-                </p>
+                <form onSubmit={handleRegister} className="space-y-4">
 
-                {/* Email Login Form */}
-                <form onSubmit={handleLogin} className="space-y-4 mb-6">
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Full Name"
+                        required
+                        className="w-full border border-gray-300 p-3 rounded-xl"
+                    />
+
                     <input
                         type="email"
+                        name="email"
                         placeholder="Email"
-                        className="w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 focus:ring-purple-400"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
                         required
+                        className="w-full border border-gray-300 p-3 rounded-xl"
                     />
 
                     <input
                         type="password"
+                        name="password"
                         placeholder="Password"
-                        className="w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 focus:ring-purple-400"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
                         required
+                        className="w-full border border-gray-300 p-3 rounded-xl"
                     />
 
                     <button
                         type="submit"
-                        className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-medium transition-all"
+                        className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-medium transition"
                     >
-                        Login
+                        Register
                     </button>
                 </form>
 
-                <div className="flex items-center gap-4 my-6">
-                    <div className="flex-1 h-px bg-gray-300"></div>
-                    <span className="text-gray-500 text-sm">OR</span>
-                    <div className="flex-1 h-px bg-gray-300"></div>
-                </div>
+                <div className="my-4 text-gray-500">OR</div>
 
-                {/* Google Login Button */}
                 <button
-                    onClick={handleGoogleLogin}
+                    onClick={handleGoogleSignup}
                     className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 hover:bg-gray-100 px-4 py-3 rounded-xl shadow-sm transition-all"
                 >
+                    {/* Google Logo */}
                     <svg viewBox="-3 0 262 262" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6">
                         <path d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027" fill="#4285F4" />
                         <path d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1" fill="#34A853" />
@@ -93,15 +87,12 @@ export default function Login() {
                         <path d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251" fill="#EB4335" />
                     </svg>
 
-                    <span className="text-gray-700 font-medium">Sign in with Google</span>
+                    <span className="text-gray-700 font-medium">Sign up with Google</span>
                 </button>
 
-                {/* Register Redirect */}
-                <p className="mt-6 text-gray-600 text-sm">
-                    Don't have an account?{" "}
-                    <a href="/register" className="text-purple-600 font-medium hover:underline">
-                        Register here
-                    </a>
+                <p className="mt-6 text-gray-600">
+                    Already have an account?{" "}
+                    <a href="/login" className="text-purple-600 font-medium">Login</a>
                 </p>
 
             </div>
