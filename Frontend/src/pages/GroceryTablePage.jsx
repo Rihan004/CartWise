@@ -3,21 +3,15 @@ import axios from "axios";
 
 const GroceryTablePage = () => {
   const [groceries, setGroceries] = useState([]);
-
-  // Filter states
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
-  // ✅ Get token from localStorage
   const token = localStorage.getItem("token");
 
   const fetchGroceries = async (query = "") => {
     try {
       const res = await axios.get(
         `http://localhost:5000/api/groceries${query}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }, // 🔑 Pass token
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setGroceries(res.data);
     } catch (err) {
@@ -26,51 +20,41 @@ const GroceryTablePage = () => {
   };
 
   useEffect(() => {
-    fetchGroceries(); // load all initially
+    fetchGroceries();
   }, []);
 
-  // Apply Date Filters
   const handleFilter = () => {
     let query = "";
-
-    if (startDate && endDate) {
-      query = `?start=${startDate}&end=${endDate}`;
-    } else if (startDate) {
-      query = `?start=${startDate}`;
-    } else if (endDate) {
-      query = `?end=${endDate}`;
-    }
-
+    if (startDate && endDate) query = `?start=${startDate}&end=${endDate}`;
+    else if (startDate) query = `?start=${startDate}`;
+    else if (endDate) query = `?end=${endDate}`;
     fetchGroceries(query);
   };
 
-  // Reset filters
   const resetFilter = () => {
     setStartDate("");
     setEndDate("");
     fetchGroceries();
   };
 
-  // Calculate totals
   const totalItems = groceries.length;
-  const totalPrice = groceries.reduce((acc, item) => {
-    const itemTotal = Number(item.cost || 0) * Number(item.quantity || 1);
-    return acc + itemTotal;
-  }, 0);
+  const totalPrice = groceries.reduce(
+    (acc, item) => acc + Number(item.cost || 0) * Number(item.quantity || 1),
+    0
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-10 px-4">
       <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl p-6 sm:p-10">
         <h1 className="text-3xl sm:text-4xl font-bold text-center text-indigo-700 mb-6">
-          📊 Grocery List (Table View)
+          📊 Grocery List
         </h1>
 
-        {/* 🎯 Date Filters */}
+        {/* Filters */}
         <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-6 shadow-sm">
           <h2 className="font-semibold text-indigo-700 mb-3">
             🔍 Filter by Date
           </h2>
-
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="block text-sm text-gray-600">Start Date</label>
@@ -81,7 +65,6 @@ const GroceryTablePage = () => {
                 className="w-full p-2 border rounded-lg"
               />
             </div>
-
             <div>
               <label className="block text-sm text-gray-600">End Date</label>
               <input
@@ -91,7 +74,6 @@ const GroceryTablePage = () => {
                 className="w-full p-2 border rounded-lg"
               />
             </div>
-
             <div className="flex items-end gap-2">
               <button
                 onClick={handleFilter}
@@ -109,61 +91,75 @@ const GroceryTablePage = () => {
           </div>
         </div>
 
-        {/* 📋 Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full border border-gray-300 rounded-xl overflow-hidden">
-            <thead className="bg-indigo-600 text-white">
-              <tr>
-                <th className="px-4 py-3 text-left">Name</th>
-                <th className="px-4 py-3 text-left">Quantity</th>
-                <th className="px-4 py-3 text-left">Cost (₹)</th>
-                <th className="px-4 py-3 text-left">Category</th>
-                <th className="px-4 py-3 text-left">Added On</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {groceries.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="text-center py-6 text-gray-500">
-                    No grocery items found 🥲
-                  </td>
-                </tr>
-              ) : (
-                groceries.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="border-b hover:bg-indigo-50 transition"
-                  >
-                    <td className="px-4 py-3 font-medium">{item.name}</td>
-                    <td className="px-4 py-3">{item.quantity}</td>
-                    <td className="px-4 py-3">₹{item.cost}</td>
-                    <td className="px-4 py-3">
-                      {item.category || "Uncategorized"}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-500">
-                      {new Date(item.created_at).toLocaleDateString()}
+        {/* Responsive View */}
+        {groceries.length === 0 ? (
+          <p className="text-center py-10 text-gray-500">No grocery items found 🥲</p>
+        ) : (
+          <>
+            {/* Desktop Table */}
+            <div className="hidden sm:block overflow-x-auto mb-6">
+              <table className="min-w-full border border-gray-300 rounded-xl overflow-hidden">
+                <thead className="bg-indigo-600 text-white">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Name</th>
+                    <th className="px-4 py-3 text-left">Quantity</th>
+                    <th className="px-4 py-3 text-left">Cost (₹)</th>
+                    <th className="px-4 py-3 text-left">Category</th>
+                    <th className="px-4 py-3 text-left">Added On</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {groceries.map((item) => (
+                    <tr
+                      key={item.id}
+                      className="border-b hover:bg-indigo-50 transition"
+                    >
+                      <td className="px-4 py-3 font-medium">{item.name}</td>
+                      <td className="px-4 py-3">{item.quantity}</td>
+                      <td className="px-4 py-3">₹{item.cost}</td>
+                      <td className="px-4 py-3">{item.category || "Uncategorized"}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500">
+                        {new Date(item.created_at).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="bg-purple-50 font-semibold">
+                    <td className="px-4 py-3">Total Items</td>
+                    <td className="px-4 py-3">{totalItems}</td>
+                    <td className="px-4 py-3">₹{totalPrice}</td>
+                    <td className="px-4 py-3" colSpan={2}>
+                      : Filtered Total Price
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
+                </tfoot>
+              </table>
+            </div>
 
-            {/* Footer Summary */}
-            {groceries.length > 0 && (
-              <tfoot>
-                <tr className="bg-purple-50 font-semibold">
-                  <td className="px-4 py-3">Total Items</td>
-                  <td className="px-4 py-3">{totalItems}</td>
-                  <td className="px-4 py-3">₹{totalPrice}</td>
-                  <td className="px-4 py-3" colSpan={2}>
-                    : Filtered Total Price
-                  </td>
-                </tr>
-              </tfoot>
-            )}
-          </table>
-        </div>
+            {/* Mobile Cards */}
+            <div className="sm:hidden grid gap-4">
+              {groceries.map((item) => (
+                <div
+                  key={item.id}
+                  className="p-4 bg-white rounded-2xl shadow-md border flex flex-col"
+                >
+                  <div className="flex justify-between mb-2">
+                    <p className="font-semibold text-gray-800">{item.name}</p>
+                    <p className="text-gray-600">{item.category || "Uncategorized"}</p>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <p>Qty: {item.quantity}</p>
+                    <p>₹{item.cost}</p>
+                  </div>
+                  <p className="text-sm text-gray-400 mt-2">
+                    Added: {new Date(item.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         <div className="text-center mt-8">
           <a
