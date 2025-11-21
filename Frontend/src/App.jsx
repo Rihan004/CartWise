@@ -6,6 +6,7 @@ import GroceryTablePage from "./pages/GroceryTablePage";
 import AuthSuccess from "./pages/AuthSuccess";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ProtectedRoute from "./components/ProtectedRoute";
 function Layout({ children }) {
   const location = useLocation();
 
@@ -26,12 +27,38 @@ function App() {
       <div className="min-h-screen bg-gray-100">
         <Layout>
           <Routes>
+            {/* PUBLIC ROUTES */}
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/auth/success" element={<AuthSuccess />} />
-            <Route path="/" element={<ExpensePage />} />
-            <Route path="/grocery" element={<GroceryPage />} />
-            <Route path="/table-view" element={<GroceryTablePage />} />
+
+            {/* PROTECTED ROUTES */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <ExpensePage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/grocery"
+              element={
+                <ProtectedRoute>
+                  <GroceryPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/table-view"
+              element={
+                <ProtectedRoute>
+                  <GroceryTablePage />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </Layout>
       </div>
