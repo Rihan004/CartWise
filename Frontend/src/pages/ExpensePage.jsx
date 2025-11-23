@@ -14,10 +14,15 @@ const ExpensePage = () => {
 
   // Fetch expenses
   const fetchExpenses = () => {
-    axios
-      .get("http://localhost:5000/api/expenses")
+    axios.get("http://localhost:5000/api/expenses", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
       .then((res) => setExpenses(res.data))
       .catch((err) => console.error(err));
+
+
   };
 
   useEffect(() => {
@@ -28,7 +33,11 @@ const ExpensePage = () => {
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/expenses", form);
+      await axios.post("http://localhost:5000/api/expenses", form, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       setForm({ title: "", amount: "", category: "", date: "" });
       fetchExpenses();
     } catch (err) {
@@ -39,7 +48,12 @@ const ExpensePage = () => {
   // Delete
   const handleDelete = async (id) => {
     if (window.confirm("Delete this expense?")) {
-      await axios.delete(`http://localhost:5000/api/expenses/${id}`);
+      await axios.delete(`http://localhost:5000/api/expenses/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
       fetchExpenses();
     }
   };
@@ -55,8 +69,15 @@ const ExpensePage = () => {
     try {
       await axios.put(
         `http://localhost:5000/api/expenses/${editExpense.id}`,
-        editExpense
+        editExpense,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
+
+
       setShowModal(false);
       setEditExpense(null);
       fetchExpenses();
