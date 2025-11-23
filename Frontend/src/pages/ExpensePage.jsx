@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-
+import { Link } from "react-router-dom";
 const ExpensePage = () => {
   const [expenses, setExpenses] = useState([]);
   const [form, setForm] = useState({
@@ -92,7 +92,15 @@ const ExpensePage = () => {
         <h1 className="text-3xl sm:text-4xl font-extrabold text-center mb-8 text-indigo-700 drop-shadow-sm">
           Expense Tracker 💰
         </h1>
-
+        {/* Analytics Button */}
+        <div className="flex justify-center mb-6">
+          <Link
+            to="/analytics"
+            className="bg-indigo-600 text-white px-5 py-2 rounded-xl shadow-md hover:bg-indigo-700 transition font-semibold"
+          >
+            📊 View Analytics
+          </Link>
+        </div>
         {/* Add Form */}
         <form
           onSubmit={handleAdd}

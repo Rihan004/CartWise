@@ -7,6 +7,7 @@ import AuthSuccess from "./pages/AuthSuccess";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AnalyticsPage from "./pages/AnalyticsPage";
 function Layout({ children }) {
   const location = useLocation();
 
@@ -59,6 +60,12 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/analytics" element={ 
+              <ProtectedRoute>
+                <AnalyticsPage />
+              </ProtectedRoute>} 
+            />
+            
           </Routes>
         </Layout>
       </div>
