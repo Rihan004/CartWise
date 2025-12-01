@@ -30,6 +30,7 @@ const recommendRoutes = require("./src/routes/recommendRoutes.js");
 const authRoutes = require("./src/routes/authRoutes.js");
 const authLocalRoutes = require("./src/routes/authLocalRoutes.js");
 const expenseAnalyticsRoutes = require("./src/routes/expenseAnalyticsRoutes.js");
+const groceryAnalyticsRoutes = require("./src/routes/groceryAnalyticsRoutes.js");
 
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/groceries", groceryRoutes);
@@ -37,6 +38,7 @@ app.use("/api/recommend", recommendRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/auth/local", authLocalRoutes);
 app.use("/api/analytics/expenses", expenseAnalyticsRoutes);
+app.use("/api/analytics/groceries", groceryAnalyticsRoutes);
 
 // Simple test route
 app.get("/", (req, res) => {

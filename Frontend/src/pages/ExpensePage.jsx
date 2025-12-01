@@ -98,7 +98,7 @@ const ExpensePage = () => {
             to="/analytics"
             className="bg-indigo-600 text-white px-5 py-2 rounded-xl shadow-md hover:bg-indigo-700 transition font-semibold"
           >
-            📊 View Analytics
+            📊 View all your expense and grocery analytics in one place.
           </Link>
         </div>
         {/* Add Form */}

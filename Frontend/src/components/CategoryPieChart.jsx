@@ -14,18 +14,50 @@ const CategorySummary = () => {
   const [summary, setSummary] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/analytics/expenses/category-summary", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      })
-      .then((res) => {
-        const formatted = Object.entries(res.data).map(([category, total]) => ({
-          category,
-          total,
-        }));
-        setSummary(formatted);
-      })
-      .catch((err) => console.error(err));
+    const token = localStorage.getItem("token");
+
+    const fetchData = async () => {
+      try {
+        // Fetch expense category summary
+        const expensesRes = await axios.get(
+          "http://localhost:5000/api/analytics/expenses/category-summary",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        const expenseFormatted = Object.entries(expensesRes.data).map(
+          ([category, total]) => ({
+            category,
+            total,
+          })
+        );
+
+        // Fetch grocery category summary
+        const groceriesRes = await axios.get(
+          "http://localhost:5000/api/analytics/groceries/category-summary",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        // SUM all grocery categories
+        const groceryTotal = Object.values(groceriesRes.data).reduce(
+          (acc, val) => acc + val,
+          0
+        );
+
+        // Create single grocery slice
+        const groceryFormatted = [
+          {
+            category: "Grocery",
+            total: groceryTotal,
+          },
+        ];
+
+        setSummary([...expenseFormatted, ...groceryFormatted]);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const chartData = {
@@ -41,6 +73,7 @@ const CategorySummary = () => {
           "#60A5FA",
           "#A78BFA",
           "#F472B6",
+          "#4ADE80",
         ],
       },
     ],
@@ -52,7 +85,6 @@ const CategorySummary = () => {
         Category Summary
       </h2>
 
-      {/* Chart Container (SMALLER SIZE) */}
       <div className="w-60 h-60 sm:w-72 sm:h-72">
         <Pie data={chartData} />
       </div>

@@ -1,10 +1,32 @@
-import React, { useState } from "react";
+// src/components/Navbar.jsx
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react"; // modern icons (install via `npm i lucide-react`)
+import { Menu, X } from "lucide-react";
 
 function Navbar() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profilePic, setProfilePic] = useState(null);
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+
+    if (user) {
+      try {
+        const parsed = JSON.parse(user);
+
+        if (parsed.profile_pic && parsed.profile_pic !== "") {
+          setProfilePic(parsed.profile_pic);
+          return;
+        }
+      } catch (err) {
+        console.error("Invalid user object:", err);
+      }
+    }
+
+    // default fallback
+    setProfilePic("https://i.pravatar.cc/40");
+  }, []);
 
   const linkClasses = (path) =>
     `px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
@@ -15,29 +37,32 @@ function Navbar() {
 
   return (
     <nav className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-4 flex justify-between items-center shadow-lg relative">
-      {/* Brand */}
       <div className="text-2xl font-extrabold tracking-wide drop-shadow-md">
-        LetsTrackIt
+        <Link to="/" className="hover:opacity-80 transition">
+          CartWise
+        </Link>
       </div>
 
-      {/* Desktop Nav */}
+
       <div className="hidden md:flex items-center gap-6">
-        <Link to="/" className={linkClasses("/")}>
-          Expenses
-        </Link>
-        <Link to="/grocery" className={linkClasses("/groceries")}>
-          Groceries
-        </Link>
+        <Link to="/" className={linkClasses("/")}>Expenses</Link>
+        <Link to="/grocery" className={linkClasses("/grocery")}>Groceries</Link>
+
         <div className="ml-3">
-          <img
-            src="https://i.pravatar.cc/40"
-            alt="Profile"
-            className="w-10 h-10 rounded-full border-2 border-white shadow-md"
-          />
+          {profilePic && (
+            <img
+              src={profilePic}
+              alt="Profile"
+              className="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "https://i.pravatar.cc/40";
+              }}
+            />
+          )}
         </div>
       </div>
 
-      {/* Mobile Menu Button */}
       <button
         className="md:hidden p-2 hover:bg-indigo-500 rounded-lg transition"
         onClick={() => setMenuOpen(!menuOpen)}
@@ -45,13 +70,12 @@ function Navbar() {
         {menuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Mobile Dropdown */}
       {menuOpen && (
         <div className="absolute top-full left-0 w-full bg-indigo-700 shadow-lg flex flex-col items-center py-4 space-y-3 md:hidden z-50">
           <Link onClick={() => setMenuOpen(false)} to="/" className={linkClasses("/")}>
             Expenses
           </Link>
-          <Link onClick={() => setMenuOpen(false)} to="/grocery" className={linkClasses("/groceries")}>
+          <Link onClick={() => setMenuOpen(false)} to="/grocery" className={linkClasses("/grocery")}>
             Groceries
           </Link>
         </div>
