@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Pie } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -18,40 +13,29 @@ const CategorySummary = () => {
 
     const fetchData = async () => {
       try {
-        // Fetch expense category summary
         const expensesRes = await axios.get(
           "http://localhost:5000/api/analytics/expenses/category-summary",
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
         const expenseFormatted = Object.entries(expensesRes.data).map(
-          ([category, total]) => ({
-            category,
-            total,
-          })
+          ([category, total]) => ({ category, total })
         );
 
-        // Fetch grocery category summary
         const groceriesRes = await axios.get(
           "http://localhost:5000/api/analytics/groceries/category-summary",
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        // SUM all grocery categories
         const groceryTotal = Object.values(groceriesRes.data).reduce(
           (acc, val) => acc + val,
           0
         );
 
-        // Create single grocery slice
-        const groceryFormatted = [
-          {
-            category: "Grocery",
-            total: groceryTotal,
-          },
-        ];
-
-        setSummary([...expenseFormatted, ...groceryFormatted]);
+        setSummary([
+          ...expenseFormatted,
+          { category: "Grocery", total: groceryTotal },
+        ]);
       } catch (err) {
         console.error(err);
       }
@@ -79,14 +63,25 @@ const CategorySummary = () => {
     ],
   };
 
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: { boxWidth: 12, padding: 12 },
+      },
+    },
+  };
+
   return (
-    <div className="flex flex-col items-center">
-      <h2 className="text-2xl font-bold text-indigo-600 mb-4">
+    <div className="w-full flex flex-col items-center justify-center">
+      <h2 className="text-xl sm:text-2xl font-bold text-indigo-600 mb-4 text-center">
         Category Summary
       </h2>
 
-      <div className="w-60 h-60 sm:w-72 sm:h-72">
-        <Pie data={chartData} />
+      <div className="w-full max-w-sm sm:max-w-md h-72 sm:h-80 flex items-center justify-center">
+        <Pie data={chartData} options={options} />
       </div>
     </div>
   );

@@ -1,47 +1,23 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Line } from "react-chartjs-2";
+import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend } from "chart.js";
 
-// Chart.js imports
-import {
-  Chart as ChartJS,
-  LineElement,
-  PointElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
-// Register required components
-ChartJS.register(
-  LineElement,
-  PointElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Legend
-);
+ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const MonthlyTrends = () => {
   const [dataList, setDataList] = useState([]);
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/analytics/expenses/trends/monthly", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      })
+      .get("http://localhost:5000/api/analytics/expenses/trends/monthly", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
       .then((res) => setDataList(res.data))
       .catch((err) => console.error(err));
   }, []);
 
-  // Format date: "2025-11" → "Nov 2025"
   const formattedLabels = dataList.map((item) => {
     const [year, month] = item.date.split("-");
-    const monthNames = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-    ];
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     return `${monthNames[parseInt(month) - 1]} ${year}`;
   });
 
@@ -53,23 +29,24 @@ const MonthlyTrends = () => {
         data: dataList.map((d) => d.total),
         tension: 0.4,
         borderWidth: 3,
+        fill: false,
       },
     ],
   };
 
   const options = {
     responsive: true,
-    maintainAspectRatio: false, // allows manual sizing
+    maintainAspectRatio: false,
+    plugins: { legend: { display: true, position: "bottom" } },
   };
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-indigo-600 mb-4">
+    <div className="w-full max-w-4xl mx-auto p-4 sm:p-6">
+      <h2 className="text-xl sm:text-2xl font-bold text-indigo-600 mb-4 text-center sm:text-left">
         Monthly Trends 📈
       </h2>
 
-      {/* Make chart smaller */}
-      <div style={{ width: "400px", height: "250px" }}>
+      <div className="w-full h-64 sm:h-80 md:h-96 bg-white p-4 rounded-xl shadow">
         <Line data={chartData} options={options} />
       </div>
     </div>

@@ -24,7 +24,7 @@ const AnalyticsPage = () => {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gray-100 flex gap-6">
+    <div className="min-h-screen p-4 sm:p-6 bg-gray-100 flex flex-col md:flex-row gap-4 md:gap-6">
       
       <AnalyticsMenu selected={selected} setSelected={setSelected} />
 

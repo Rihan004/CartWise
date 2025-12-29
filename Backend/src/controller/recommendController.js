@@ -1,4 +1,5 @@
 const axios = require("axios");
+require("dotenv").config();
 
 const getRecommendations = async (req, res) => {
   const { items } = req.body;
@@ -8,10 +9,11 @@ const getRecommendations = async (req, res) => {
   }
 
   try {
-    const prompt = `
+    // ---------------- Step 1: First API call with reasoning ----------------
+    const initialPrompt = `
       Based on this items list: ${items.join(", ")},
       suggest 5 additional shop items that people often forget.
-      For each item, also give an estimated price in your currency.
+      For each item, also give an estimated price in INR.
       Respond with a JSON array of objects:
       [
         { "name": "Milk", "estimated_price": 60 },
@@ -19,43 +21,68 @@ const getRecommendations = async (req, res) => {
       ]
     `;
 
-    const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        model: "openai/gpt-oss-20b:free",
+    let response1 = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "nvidia/nemotron-3-nano-30b-a3b:free", //NVIDIA: Nemotron 3 Nano 30B A3B (free)
         messages: [
           {
             role: "user",
-            content: prompt
-          }
-        ]
+            content: initialPrompt,
+          },
+        ],
+        reasoning: { enabled: true }, // enable reasoning
+      }),
+    });
+
+    const result1 = await response1.json();
+    let assistantMessage = result1.choices[0].message;
+
+    // ---------------- Step 2: Second API call to continue reasoning ----------------
+    const messages = [
+      {
+        role: "user",
+        content: initialPrompt,
       },
       {
-        headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "X-Title": "LetsTrackIt Grocery AI",
-        },
-      }
-    );
+        role: "assistant",
+        content: assistantMessage.content,
+        reasoning_details: assistantMessage.reasoning_details, // preserve reasoning
+      },
+      {
+        role: "user",
+        content: "Are you sure? Think carefully.",
+      },
+    ];
 
-    let aiText = response.data.choices[0].message.content;
+    let response2 = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "nvidia/nemotron-3-nano-30b-a3b:free",
+        messages: messages,
+      }),
+    });
 
-    // ---------- FIX JSON FROM AI ----------
-    // remove ```json or ``` wrappers
-    aiText = aiText
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim();
+    const result2 = await response2.json();
+    let aiText = result2.choices[0].message.content;
 
-    // extract clean JSON array
+    // ---------------- Fix AI output to valid JSON ----------------
+    aiText = aiText.replace(/```json/g, "").replace(/```/g, "").trim();
+
     const match = aiText.match(/\[[\s\S]*?\]/);
     if (!match) {
       throw new Error("No JSON array found in AI output");
     }
 
     const suggestions = JSON.parse(match[0]);
-    // -------------------------------------
 
     res.json({ suggestions });
 
