@@ -7,7 +7,7 @@ function Navbar() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
-
+  const [profileOpen, setProfileOpen] = useState(false);
   useEffect(() => {
     const user = localStorage.getItem("user");
 
@@ -27,6 +27,24 @@ function Navbar() {
     // default fallback
     setProfilePic("https://i.pravatar.cc/40");
   }, []);
+  const handleLogout = async () => {
+    try {
+      // Call backend logout (optional, mainly for Google OAuth sessions)
+      await fetch("http://localhost:5000/auth/logout", {
+        method: "POST",
+        credentials: "include", // needed for cookies if using Passport
+      });
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+
+    // Remove JWT and user info from localStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    // Redirect to login page
+    window.location.href = "/login";
+  };
 
   const linkClasses = (path) =>
     `px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
@@ -47,18 +65,27 @@ function Navbar() {
       <div className="hidden md:flex items-center gap-6">
         <Link to="/" className={linkClasses("/")}>Expenses</Link>
         <Link to="/grocery" className={linkClasses("/grocery")}>Groceries</Link>
+        <div className="ml-3 relative">
+          <img
+            src={profilePic}
+            alt="Profile"
+            className="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover cursor-pointer"
+            onClick={() => setProfileOpen(!profileOpen)}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "https://i.pravatar.cc/40";
+            }}
+          />
 
-        <div className="ml-3">
-          {profilePic && (
-            <img
-              src={profilePic}
-              alt="Profile"
-              className="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover"
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src = "https://i.pravatar.cc/40";
-              }}
-            />
+          {profileOpen && (
+            <div className="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg flex flex-col">
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-red-600 hover:bg-red-100 rounded-t-xl transition"
+              >
+                Logout
+              </button>
+            </div>
           )}
         </div>
       </div>

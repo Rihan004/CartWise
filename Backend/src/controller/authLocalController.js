@@ -85,3 +85,14 @@ exports.loginUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+exports.logoutUser = (req, res) => {
+  try {
+    // For JWT-based auth, no server action needed
+    // Simply return success
+    res.json({ message: "Logout successful" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Logout failed" });
+  }
+};
