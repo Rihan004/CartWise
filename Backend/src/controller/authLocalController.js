@@ -1,4 +1,4 @@
-const pool = require("../config/db");
+const sql = require("../config/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -10,7 +10,7 @@ const generateToken = (user) => {
   );
 };
 
-// REGISTER USER (email + password)
+// REGISTER USER
 exports.registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -18,32 +18,30 @@ exports.registerUser = async (req, res) => {
     if (!email || !password)
       return res.status(400).json({ message: "Email and password required" });
 
-    // Check existing
-    const userExists = await pool.query(
-      "SELECT * FROM users WHERE email=$1",
-      [email]
-    );
+    // Check existing user
+    const userExists = await sql`
+      SELECT id FROM users WHERE email = ${email}
+    `;
 
-    if (userExists.rows.length > 0) {
+    if (userExists.length > 0) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Hash password
     const hashed = await bcrypt.hash(password, 10);
 
     // Insert user
-    const result = await pool.query(
-      `INSERT INTO users (name, email, password)
-       VALUES ($1, $2, $3)
-       RETURNING id, name, email`,
-      [name, email, hashed]
-    );
+    const result = await sql`
+      INSERT INTO users (name, email, password)
+      VALUES (${name}, ${email}, ${hashed})
+      RETURNING id, name, email
+    `;
 
-    const token = generateToken(result.rows[0]);
-    res.json({ token, user: result.rows[0] });
+    const token = generateToken(result[0]);
+
+    res.json({ token, user: result[0] });
 
   } catch (err) {
-    console.error(err);
+    console.error("Register error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -53,21 +51,18 @@ exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const userRes = await pool.query(
-      "SELECT * FROM users WHERE email=$1",
-      [email]
-    );
+    const users = await sql`
+      SELECT * FROM users WHERE email = ${email}
+    `;
 
-    if (userRes.rows.length === 0)
+    if (users.length === 0)
       return res.status(400).json({ message: "User not found" });
 
-    const user = userRes.rows[0];
+    const user = users[0];
 
-    // user logged in using Google earlier → no password
     if (!user.password)
       return res.status(400).json({ message: "This user uses Google login only" });
 
-    // Validate password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
@@ -81,18 +76,12 @@ exports.loginUser = async (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("Login error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
 
+// LOGOUT
 exports.logoutUser = (req, res) => {
-  try {
-    // For JWT-based auth, no server action needed
-    // Simply return success
-    res.json({ message: "Logout successful" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Logout failed" });
-  }
+  res.json({ message: "Logout successful" });
 };

@@ -6,7 +6,7 @@ import AIRecommendations from "../components/AIRecommendations";
 
 const GroceryPage = () => {
   const [groceries, setGroceries] = useState([]);
-  const token = localStorage.getItem("token"); // 🔑 token
+  const token = localStorage.getItem("token");
 
   const fetchGroceries = async () => {
     try {
@@ -20,28 +20,24 @@ const GroceryPage = () => {
   };
 
   useEffect(() => {
-    fetchGroceries();
-  }, []);
+    fetchGroceries(); // runs once
+  }, []); 
 
-  const handleAdd = async (item) => {
-    try {
-      const res = await axios.post("http://localhost:5000/api/groceries/add", item, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setGroceries((prev) => [res.data, ...prev]);
-    } catch (err) {
-      console.error("Error adding grocery:", err);
-    }
+  // 🔥 Add Item (Now stable & no double insert)
+  const handleAdd = (newItem) => {
+    setGroceries((prev) => [newItem, ...prev]);
   };
 
+  // Delete
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/api/groceries/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       setGroceries((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
-      console.error("Error deleting grocery:", err);
+      console.error("Delete error:", err);
     }
   };
 

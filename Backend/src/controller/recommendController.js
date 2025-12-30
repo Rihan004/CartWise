@@ -12,7 +12,7 @@ const getRecommendations = async (req, res) => {
     // ---------------- Step 1: First API call with reasoning ----------------
     const initialPrompt = `
       Based on this items list: ${items.join(", ")},
-      suggest 5 additional shop items that people often forget.
+      suggest 5 additional shop items based on item list that people often forget.
       For each item, also give an estimated price in INR.
       Respond with a JSON array of objects:
       [

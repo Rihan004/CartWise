@@ -1,22 +1,19 @@
-const pool = require("../config/db");
+const sql = require("../config/db");
 
 // -------------------- Monthly Total --------------------
 exports.getMonthlyTotal = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { month } = req.query; // format: 2025-02
+    const { month } = req.query;
 
-    const result = await pool.query(
-      `
+    const result = await sql`
       SELECT COALESCE(SUM(amount), 0) AS total
-      FROM expenses 
-      WHERE user_id = $1 
-      AND TO_CHAR(date, 'YYYY-MM') = $2
-    `,
-      [userId, month]
-    );
+      FROM expenses
+      WHERE user_id = ${userId}
+      AND TO_CHAR(date, 'YYYY-MM') = ${month}
+    `;
 
-    res.json({ total: result.rows[0].total });
+    res.json({ total: Number(result[0].total) });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
@@ -27,20 +24,17 @@ exports.getMonthlyTotal = async (req, res) => {
 exports.getWeeklyTotal = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { week } = req.query; // Give any date inside week
+    const { week } = req.query;
 
-    const result = await pool.query(
-      `
+    const result = await sql`
       SELECT COALESCE(SUM(amount), 0) AS total
-      FROM expenses 
-      WHERE user_id = $1 
-      AND date >= date_trunc('week', $2::date)
-      AND date < date_trunc('week', $2::date) + interval '7 days'
-    `,
-      [userId, week]
-    );
+      FROM expenses
+      WHERE user_id = ${userId}
+      AND date >= date_trunc('week', ${week}::date)
+      AND date < date_trunc('week', ${week}::date) + interval '7 days'
+    `;
 
-    res.json({ total: result.rows[0].total });
+    res.json({ total: Number(result[0].total) });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
@@ -52,18 +46,15 @@ exports.getCategorySummary = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const result = await pool.query(
-      `
+    const rows = await sql`
       SELECT category, SUM(amount) AS total
       FROM expenses
-      WHERE user_id = $1
+      WHERE user_id = ${userId}
       GROUP BY category
-    `,
-      [userId]
-    );
+    `;
 
     const summary = {};
-    result.rows.forEach((row) => {
+    rows.forEach((row) => {
       summary[row.category || "Uncategorized"] = Number(row.total);
     });
 
@@ -79,21 +70,18 @@ exports.getMonthlyTrends = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const result = await pool.query(
-      `
-      SELECT 
+    const rows = await sql`
+      SELECT
         TO_CHAR(date, 'YYYY-MM') AS month,
         SUM(amount) AS total
       FROM expenses
-      WHERE user_id = $1
+      WHERE user_id = ${userId}
       GROUP BY month
       ORDER BY month ASC
-    `,
-      [userId]
-    );
+    `;
 
     res.json(
-      result.rows.map((row) => ({
+      rows.map((row) => ({
         date: row.month,
         total: Number(row.total),
       }))

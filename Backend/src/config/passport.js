@@ -1,6 +1,6 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const pool = require("./db");
+const sql = require("./db");
 require("dotenv").config();
 
 passport.use(
@@ -8,51 +8,55 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL, // use from .env
+      callbackURL: process.env.GOOGLE_CALLBACK_URL,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
         const google_id = profile.id;
         const name = profile.displayName;
-        const email = profile.emails[0].value;
+        const email = profile.emails?.[0]?.value || null;
         const profile_pic = profile.photos?.[0]?.value || null;
 
-        // Check if user already exists
-        const existing = await pool.query(
-          "SELECT * FROM users WHERE google_id = $1",
-          [google_id]
-        );
+        // 🔍 Check if user exists
+        const existing = await sql`
+          SELECT * FROM users WHERE google_id = ${google_id}
+        `;
 
-        if (existing.rows.length > 0) {
-          return done(null, existing.rows[0]); // return DB user
+        if (existing.length > 0) {
+          return done(null, existing[0]);
         }
 
-        // Create user (password NULL for google users)
-        const newUser = await pool.query(
-          `INSERT INTO users (google_id, name, email, profile_pic)
-           VALUES ($1, $2, $3, $4)
-           RETURNING *`,
-          [google_id, name, email, profile_pic]
-        );
+        // ➕ Create new Google user
+        const newUser = await sql`
+          INSERT INTO users (google_id, name, email, profile_pic)
+          VALUES (${google_id}, ${name}, ${email}, ${profile_pic})
+          RETURNING *
+        `;
 
-        return done(null, newUser.rows[0]);
+        return done(null, newUser[0]);
       } catch (err) {
-        console.error("Passport Error:", err);
+        console.error("Passport Google Error:", err);
         return done(err, null);
       }
     }
   )
 );
 
-// store only user id in session
+// 🔐 Store only user id
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-// fetch full user from DB
+// 🔄 Fetch full user from DB
 passport.deserializeUser(async (id, done) => {
-  const user = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
-  done(null, user.rows[0]);
+  try {
+    const users = await sql`
+      SELECT * FROM users WHERE id = ${id}
+    `;
+    done(null, users[0]);
+  } catch (err) {
+    done(err, null);
+  }
 });
 
 module.exports = passport;

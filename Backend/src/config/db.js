@@ -1,17 +1,15 @@
 // src/config/db.js
-const { Pool } = require("pg");
+const { neon } = require("@neondatabase/serverless");
 
-const pool = new Pool({
-  user: process.env.PG_USER,
-  host: process.env.PG_HOST,
-  database: process.env.PG_DATABASE,
-  password: process.env.PG_PASSWORD,
-  port: process.env.PG_PORT,
-});
+const sql = neon(process.env.DATABASE_URL);
 
-pool
-  .connect()
-  .then(() => console.log("✅ Connected to PostgreSQL database"))
-  .catch((err) => console.error("❌ Database connection error:", err));
+(async () => {
+  try {
+    await sql`SELECT 1`;
+    console.log("✅ Connected to Neon PostgreSQL");
+  } catch (err) {
+    console.error("❌ Neon DB connection error:", err);
+  }
+})();
 
-module.exports = pool;
+module.exports = sql;
