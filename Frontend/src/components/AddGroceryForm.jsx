@@ -13,7 +13,7 @@ const AddGroceryForm = ({ onAdd }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (loading) return; // ⛔ prevents double submission
+    if (loading) return;
 
     if (!form.name || !form.quantity) {
       return alert("Please fill required fields");
@@ -29,9 +29,8 @@ const AddGroceryForm = ({ onAdd }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      onAdd(res.data); // update UI immediately
+      onAdd(res.data);
       setForm({ name: "", quantity: "", cost: "", category: "" });
-
     } catch (error) {
       console.error(error);
       alert("Failed to add item");
@@ -41,8 +40,8 @@ const AddGroceryForm = ({ onAdd }) => {
   };
 
   return (
-    <div className="mx-3 sm:mx-auto mt-6 sm:mt-10 w-full max-w-md bg-white/80 backdrop-blur-lg shadow-lg rounded-2xl p-4 sm:p-6 border border-gray-200">
-      <h2 className="text-xl sm:text-2xl font-semibold text-center text-indigo-700 mb-5">
+    <div className="mx-2 sm:mx-auto mt-6 sm:mt-10 w-full max-w-md rounded-2xl bg-gray-900/90 backdrop-blur-xl border border-gray-700 shadow-2xl p-4 sm:p-6">
+      <h2 className="text-xl sm:text-2xl font-bold text-center text-purple-400 mb-6">
         🛒 Add Grocery Item
       </h2>
 
@@ -53,7 +52,13 @@ const AddGroceryForm = ({ onAdd }) => {
             placeholder="Item name"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="p-2 border rounded-lg"
+            className="
+              w-full p-3 rounded-xl
+              bg-gray-800 text-white placeholder-gray-400
+              border border-gray-700
+              focus:ring-2 focus:ring-purple-500 focus:border-purple-500
+              outline-none transition
+            "
             required
           />
 
@@ -62,7 +67,13 @@ const AddGroceryForm = ({ onAdd }) => {
             placeholder="Quantity"
             value={form.quantity}
             onChange={(e) => setForm({ ...form, quantity: e.target.value })}
-            className="p-2 border rounded-lg"
+            className="
+              w-full p-3 rounded-xl
+              bg-gray-800 text-white placeholder-gray-400
+              border border-gray-700
+              focus:ring-2 focus:ring-purple-500 focus:border-purple-500
+              outline-none transition
+            "
             required
           />
         </div>
@@ -73,7 +84,13 @@ const AddGroceryForm = ({ onAdd }) => {
             placeholder="Cost ₹"
             value={form.cost}
             onChange={(e) => setForm({ ...form, cost: e.target.value })}
-            className="p-2 border rounded-lg"
+            className="
+              w-full p-3 rounded-xl
+              bg-gray-800 text-white placeholder-gray-400
+              border border-gray-700
+              focus:ring-2 focus:ring-purple-500 focus:border-purple-500
+              outline-none transition
+            "
           />
 
           <input
@@ -81,14 +98,26 @@ const AddGroceryForm = ({ onAdd }) => {
             placeholder="Category"
             value={form.category}
             onChange={(e) => setForm({ ...form, category: e.target.value })}
-            className="p-2 border rounded-lg"
+            className="
+              w-full p-3 rounded-xl
+              bg-gray-800 text-white placeholder-gray-400
+              border border-gray-700
+              focus:ring-2 focus:ring-purple-500 focus:border-purple-500
+              outline-none transition
+            "
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700 transition"
+          className="
+            w-full py-3 rounded-xl font-semibold
+            bg-gradient-to-r from-purple-500 to-purple-700 text-white
+            hover:bg-purple-700
+            shadow-lg shadow-purple-500/30
+            hover:opacity-90 transition
+          "
         >
           {loading ? "Adding..." : "➕ Add Grocery"}
         </button>

@@ -1,13 +1,31 @@
-import React from "react";
+import { useEffect, useState } from "react";
 
 const EditItemModal = ({ isOpen, onClose, item, onSave }) => {
-  if (!isOpen) return null;
-
-  const [form, setForm] = React.useState({
-    name: item?.name || "",
-    quantity: item?.quantity || 1,
-    cost: item?.cost || 0,
+  const [form, setForm] = useState({
+    name: "",
+    quantity: 1,
+    cost: 0,
   });
+
+  // ✅ Keep form in sync when item changes
+  useEffect(() => {
+    if (item) {
+      setForm({
+        name: item.name || "",
+        quantity: item.quantity || 1,
+        cost: item.cost || 0,
+      });
+    }
+  }, [item]);
+
+  // ESC key close
+  useEffect(() => {
+    const handleEsc = (e) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
+  }, [onClose]);
+
+  if (!isOpen) return null;
 
   const handleSubmit = () => {
     onSave(form);
@@ -15,68 +33,118 @@ const EditItemModal = ({ isOpen, onClose, item, onSave }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-md">
-
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center 
+                 bg-black/60 backdrop-blur-sm px-3"
+      onClick={onClose}
+    >
+      {/* Modal */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="
+          w-full max-w-md
+          rounded-2xl
+          bg-gray-900 text-white
+          border border-gray-700
+          shadow-2xl
+          p-5 sm:p-6
+          animate-fadeIn
+        "
+      >
         {/* Header */}
-        <h2 className="text-xl font-semibold text-gray-800 text-center mb-4">
-          Edit Item
+        <h2 className="text-xl sm:text-2xl font-bold text-center text-purple-400 mb-6">
+          ✏️ Edit Grocery Item
         </h2>
 
         {/* Inputs */}
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium">Item Name</label>
+            <label className="text-sm text-gray-400">Item Name</label>
             <input
               type="text"
               value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full mt-1 p-2 border rounded-lg focus:ring-indigo-500"
+              onChange={(e) =>
+                setForm({ ...form, name: e.target.value })
+              }
+              className="
+                w-full mt-1 p-3 rounded-xl
+                bg-gray-800 text-white
+                border border-gray-700
+                focus:ring-2 focus:ring-purple-500
+                focus:border-purple-500
+                outline-none transition
+              "
             />
           </div>
 
           <div>
-            <label className="text-sm font-medium">Quantity</label>
+            <label className="text-sm text-gray-400">Quantity</label>
             <input
               type="number"
+              min={1}
               value={form.quantity}
               onChange={(e) =>
                 setForm({ ...form, quantity: Number(e.target.value) })
               }
-              className="w-full mt-1 p-2 border rounded-lg focus:ring-indigo-500"
+              className="
+                w-full mt-1 p-3 rounded-xl
+                bg-gray-800 text-white
+                border border-gray-700
+                focus:ring-2 focus:ring-purple-500
+                focus:border-purple-500
+                outline-none transition
+              "
             />
           </div>
 
           <div>
-            <label className="text-sm font-medium">Estimated Price</label>
+            <label className="text-sm text-gray-400">Estimated Price</label>
             <input
               type="number"
+              min={0}
               value={form.cost}
               onChange={(e) =>
                 setForm({ ...form, cost: Number(e.target.value) })
               }
-              className="w-full mt-1 p-2 border rounded-lg focus:ring-indigo-500"
+              className="
+                w-full mt-1 p-3 rounded-xl
+                bg-gray-800 text-white
+                border border-gray-700
+                focus:ring-2 focus:ring-purple-500
+                focus:border-purple-500
+                outline-none transition
+              "
             />
           </div>
         </div>
 
-        {/* Buttons */}
-        <div className="flex justify-between mt-6">
+        {/* Actions */}
+        <div className="flex gap-3 mt-8">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+            className="
+              flex-1 py-2.5 rounded-xl
+              bg-gray-700 text-gray-200
+              hover:bg-gray-600
+              transition
+            "
           >
             Cancel
           </button>
 
           <button
             onClick={handleSubmit}
-            className="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700"
+            className="
+              flex-1 py-2.5 rounded-xl
+              bg-purple-600 text-white font-semibold
+              hover:bg-purple-700
+              transition
+              shadow-lg hover:shadow-purple-500/30
+            "
           >
-            Save
+            Save Changes
           </button>
         </div>
-
       </div>
     </div>
   );

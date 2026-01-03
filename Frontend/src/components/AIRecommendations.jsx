@@ -40,32 +40,51 @@ const AIRecommendations = ({ groceries, onAdd }) => {
   };
 
   return (
-    <div className="mt-8 mx-3 sm:mx-6">
+    <div className="mt-10 mx-2 sm:mx-6">
+      {/* Action button */}
       <button
         onClick={fetchRecommendations}
-        className="w-full bg-purple-600 text-white py-3 rounded-xl font-semibold hover:bg-purple-700 transition-all shadow-md"
+        className="
+          w-full py-3 rounded-xl font-semibold
+          bg-purple-600 text-white
+          hover:bg-purple-700
+          transition-all duration-300
+          shadow-lg hover:shadow-purple-500/30
+        "
       >
-         Get AI Suggestions ✨
+        ✨ Get AI Suggestions
       </button>
 
+      {/* Loading */}
       {loading && (
-        <p className="text-center text-gray-600 mt-4 animate-pulse">
+        <p className="text-center text-purple-300 mt-4 animate-pulse">
           AI is thinking... ⏳
         </p>
       )}
 
+      {/* Suggestions */}
       {suggestions.length > 0 && (
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {suggestions.map((item, index) => (
             <div
               key={index}
-              className="p-4 bg-white/80 backdrop-blur-lg shadow-md border rounded-xl"
+              className="
+                p-4 rounded-2xl
+                bg-gray-900/90 backdrop-blur-xl
+                border border-gray-700
+                shadow-xl
+                transition hover:shadow-purple-500/20
+              "
             >
-              <p className="text-lg font-semibold text-gray-800">
+              <p className="text-lg font-semibold text-white">
                 {item.name}
               </p>
-              <p className="text-gray-600 mt-1">
-                Estimated Price: ₹{item.estimated_price}
+
+              <p className="text-gray-400 mt-1">
+                Estimated Price:{" "}
+                <span className="font-semibold text-purple-400">
+                  ₹{item.estimated_price}
+                </span>
               </p>
 
               <button
@@ -77,7 +96,13 @@ const AIRecommendations = ({ groceries, onAdd }) => {
                   });
                   setIsModalOpen(true);
                 }}
-                className="mt-3 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700"
+                className="
+                  mt-4 w-full py-2 rounded-xl
+                  bg-indigo-600 text-white font-medium
+                  hover:bg-indigo-700
+                  transition-all duration-300
+                  shadow-md
+                "
               >
                 ➕ Add to Grocery
               </button>

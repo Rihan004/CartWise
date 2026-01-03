@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+
 const ExpensePage = () => {
   const [expenses, setExpenses] = useState([]);
   const [form, setForm] = useState({
@@ -11,6 +12,7 @@ const ExpensePage = () => {
   });
   const [editExpense, setEditExpense] = useState(null);
   const [showModal, setShowModal] = useState(false);
+
   const getLocalDate = (dateValue) => {
     const d = new Date(dateValue);
     const year = d.getFullYear();
@@ -25,25 +27,21 @@ const ExpensePage = () => {
     (exp) => getLocalDate(new Date(exp.date)) === todayDate
   );
 
-
-  // Fetch expenses
   const fetchExpenses = () => {
-    axios.get("http://localhost:5000/api/expenses", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
+    axios
+      .get("http://localhost:5000/api/expenses", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
       .then((res) => setExpenses(res.data))
       .catch((err) => console.error(err));
-
-
   };
 
   useEffect(() => {
     fetchExpenses();
   }, []);
 
-  // Add expense
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
@@ -59,7 +57,6 @@ const ExpensePage = () => {
     }
   };
 
-  // Delete
   const handleDelete = async (id) => {
     if (window.confirm("Delete this expense?")) {
       await axios.delete(`http://localhost:5000/api/expenses/${id}`, {
@@ -67,18 +64,15 @@ const ExpensePage = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-
       fetchExpenses();
     }
   };
 
-  // Open modal
   const handleEdit = (expense) => {
     setEditExpense(expense);
     setShowModal(true);
   };
 
-  // Save edit
   const handleSaveEdit = async () => {
     try {
       await axios.put(
@@ -90,8 +84,6 @@ const ExpensePage = () => {
           },
         }
       );
-
-
       setShowModal(false);
       setEditExpense(null);
       fetchExpenses();
@@ -99,170 +91,156 @@ const ExpensePage = () => {
       console.error(err);
     }
   };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-indigo-200 p-4 sm:p-8">
-      <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-md border border-gray-200 rounded-2xl shadow-xl p-6 sm:p-10">
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-center mb-8 text-indigo-700 drop-shadow-sm">
-          Expense Tracker 💰
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-purple-950 px-4 py-8">
+
+      <div className="max-w-5xl mx-auto bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-8">
+
+        <h1 className="text-4xl font-extrabold text-center mb-8 text-white">
+          Expense <span className="text-purple-400">Tracker</span>
         </h1>
+
         {/* Analytics Button */}
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-8">
           <Link
             to="/analytics"
-            className="bg-indigo-600 text-white px-5 py-2 rounded-xl shadow-md hover:bg-indigo-700 transition font-semibold"
+            className="bg-gradient-to-r from-purple-500 to-purple-700 
+                       text-white px-6 py-3 rounded-xl font-semibold
+                       shadow-lg shadow-purple-500/30 hover:opacity-90 transition"
           >
-            📊 View all your expense and grocery analytics in one place.
-          </Link> 
+            📊 View Analytics
+          </Link>
         </div>
-        {/* Add Form */}
+
+        {/* Add Expense Form */}
         <form
           onSubmit={handleAdd}
-          className="mb-10 grid grid-cols-1 sm:grid-cols-2 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10"
         >
-          <input
-            type="text"
-            placeholder="Title"
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-            className="p-3 border rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-400 outline-none"
-            required
-          />
-
-          <input
-            type="number"
-            placeholder="Amount"
-            value={form.amount}
-            onChange={(e) => setForm({ ...form, amount: e.target.value })}
-            className="p-3 border rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-400 outline-none"
-            required
-          />
-
-          <input
-            type="text"
-            placeholder="Category"
-            value={form.category}
-            onChange={(e) => setForm({ ...form, category: e.target.value })}
-            className="p-3 border rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-400 outline-none col-span-1 sm:col-span-2"
-          />
-
-          <input
-            type="date"
-            value={form.date}
-            onChange={(e) => setForm({ ...form, date: e.target.value })}
-            className="p-3 border rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-400 outline-none col-span-1 sm:col-span-2"
-            required
-          />
+          {["title", "amount", "category", "date"].map((field, idx) => (
+            <input
+              key={idx}
+              type={field === "amount" ? "number" : field === "date" ? "date" : "text"}
+              placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+              value={form[field]}
+              onChange={(e) => setForm({ ...form, [field]: e.target.value })}
+              required={field !== "category"}
+              className={`p-3 rounded-xl bg-gray-900/70 text-white placeholder-gray-500 
+                          border border-gray-700 focus:border-purple-500
+                          focus:ring-2 focus:ring-purple-500/30 outline-none transition
+                          ${field === "category" || field === "date" ? "sm:col-span-2" : ""}`}
+            />
+          ))}
 
           <button
             type="submit"
-            className="col-span-1 sm:col-span-2 bg-indigo-600 text-white p-3 rounded-xl shadow-md hover:bg-indigo-700 transition font-semibold text-lg"
+            className="sm:col-span-2 bg-purple-600 hover:bg-purple-700
+                       text-white py-3 rounded-xl font-semibold text-lg
+                       shadow-lg shadow-purple-500/30 transition"
           >
             ➕ Add Expense
           </button>
         </form>
 
-         {/* Today's Expense Cards */}
+        {/* Today Expenses */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {todaysExpenses.length === 0 ? (
-            <p className="sm:col-span-2 text-center text-gray-500 font-semibold">
-              No expenses added today 🫤
+            <p className="sm:col-span-2 text-center text-gray-400">
+              No expenses added today
             </p>
           ) : (
             todaysExpenses.map((exp) => (
               <div
                 key={exp.id}
-                className="bg-indigo-50 border p-4 rounded-xl shadow"
+                className="bg-gray-900/70 border border-gray-700 rounded-2xl p-5 shadow hover:border-purple-500 transition"
               >
-                <h2 className="font-semibold text-xl">{exp.title}</h2>
+                <h2 className="text-xl font-semibold text-white">
+                  {exp.title}
+                </h2>
 
-                <p className="mt-1">
-                  <span className="font-bold text-indigo-700">
+                <p className="mt-2 text-gray-300">
+                  <span className="text-purple-400 font-bold">
                     ₹{exp.amount}
                   </span>{" "}
                   • {exp.category || "Uncategorized"}
                 </p>
 
-                <p className="text-sm text-gray-500">{exp.date}</p>
+                <p className="text-sm text-gray-500 mt-1">{exp.date}</p>
 
-                <div className="mt-4 flex gap-2">
+                <div className="mt-4 flex gap-3">
                   <button
                     onClick={() => handleEdit(exp)}
-                    className="flex-1 bg-yellow-400 text-white p-2 rounded-lg"
+                    className="
+      flex-1 py-2.5 rounded-xl
+      bg-gradient-to-r from-yellow-400 to-yellow-500
+      text-black font-semibold
+      shadow-lg shadow-yellow-500/20
+      hover:from-yellow-500 hover:to-yellow-600
+      transition-all duration-200
+      active:scale-95
+    "
                   >
-                    Edit
+                    ✏️ Edit
                   </button>
+
                   <button
                     onClick={() => handleDelete(exp.id)}
-                    className="flex-1 bg-red-500 text-white p-2 rounded-lg"
+                    className="
+      flex-1 py-2.5 rounded-xl
+      bg-gradient-to-r from-red-600 to-red-700
+      text-white font-semibold
+      shadow-lg shadow-red-600/30
+      hover:from-red-700 hover:to-red-800
+      transition-all duration-200
+      active:scale-95
+    "
                   >
-                    Delete
+                    🗑️ Delete
                   </button>
                 </div>
+
               </div>
             ))
           )}
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 px-4">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
 
-          <div className="relative bg-white p-6 rounded-2xl w-full max-w-lg shadow-xl animate-fadeIn">
-            <h2 className="text-2xl font-bold mb-4 text-indigo-700">
+          <div className="relative bg-gray-900 border border-gray-700 rounded-2xl p-6 w-full max-w-lg shadow-2xl">
+            <h2 className="text-2xl font-bold text-white mb-4">
               Edit Expense
             </h2>
 
-            <div className="space-y-4">
-              <input
-                type="text"
-                value={editExpense.title}
-                onChange={(e) =>
-                  setEditExpense({ ...editExpense, title: e.target.value })
-                }
-                className="w-full p-3 border rounded-xl shadow-sm"
-              />
-
-              <input
-                type="number"
-                value={editExpense.amount}
-                onChange={(e) =>
-                  setEditExpense({ ...editExpense, amount: e.target.value })
-                }
-                className="w-full p-3 border rounded-xl shadow-sm"
-              />
-
-              <input
-                type="text"
-                value={editExpense.category}
-                onChange={(e) =>
-                  setEditExpense({ ...editExpense, category: e.target.value })
-                }
-                className="w-full p-3 border rounded-xl shadow-sm"
-              />
-
-              <input
-                type="date"
-                value={editExpense.date}
-                onChange={(e) =>
-                  setEditExpense({ ...editExpense, date: e.target.value })
-                }
-                className="w-full p-3 border rounded-xl shadow-sm"
-              />
+            <div className="space-y-3">
+              {["title", "amount", "category", "date"].map((field, idx) => (
+                <input
+                  key={idx}
+                  type={field === "amount" ? "number" : field === "date" ? "date" : "text"}
+                  value={editExpense[field]}
+                  onChange={(e) =>
+                    setEditExpense({ ...editExpense, [field]: e.target.value })
+                  }
+                  className="w-full p-3 rounded-xl bg-gray-800 text-white border border-gray-700"
+                />
+              ))}
             </div>
 
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-5 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition"
+                className="px-5 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
               >
                 Cancel
               </button>
 
               <button
                 onClick={handleSaveEdit}
-                className="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+                className="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg"
               >
                 Save
               </button>

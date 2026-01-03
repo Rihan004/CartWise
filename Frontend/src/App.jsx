@@ -8,16 +8,21 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AnalyticsPage from "./pages/AnalyticsPage";
+
 function Layout({ children }) {
   const location = useLocation();
 
   // Pages where navbar should be hidden
-  const hideNavbar = ["/login", "/auth/success" , "/register"];
+  const hideNavbar = ["/login", "/auth/success", "/register"];
 
   return (
     <>
       {!hideNavbar.includes(location.pathname) && <Navbar />}
-      <div className="p-6">{children}</div>
+
+      {/* Main Content Area */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {children}
+      </div>
     </>
   );
 }
@@ -25,9 +30,11 @@ function Layout({ children }) {
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100">
+      {/* Global Dark Background */}
+      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-purple-950 text-gray-100">
         <Layout>
           <Routes>
+
             {/* PUBLIC ROUTES */}
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
@@ -60,12 +67,16 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/analytics" element={ 
-              <ProtectedRoute>
-                <AnalyticsPage />
-              </ProtectedRoute>} 
+
+            <Route
+              path="/analytics"
+              element={
+                <ProtectedRoute>
+                  <AnalyticsPage />
+                </ProtectedRoute>
+              }
             />
-            
+
           </Routes>
         </Layout>
       </div>

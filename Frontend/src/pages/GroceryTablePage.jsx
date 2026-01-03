@@ -44,46 +44,44 @@ const GroceryTablePage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-10 px-4">
-      <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl p-6 sm:p-10">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-indigo-700 mb-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-purple-900 py-8 px-4">
+      <div className="max-w-6xl mx-auto bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl p-5 sm:p-8">
+
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-purple-400 mb-6">
           📊 Grocery List
         </h1>
 
         {/* Filters */}
-        <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-6 shadow-sm">
-          <h2 className="font-semibold text-indigo-700 mb-3">
+        <div className="bg-gray-800 border border-gray-700 rounded-xl p-4 mb-6">
+          <h2 className="font-semibold text-purple-300 mb-3">
             🔍 Filter by Date
           </h2>
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="block text-sm text-gray-600">Start Date</label>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full p-2 border rounded-lg"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-600">End Date</label>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-full p-2 border rounded-lg"
-              />
-            </div>
-            <div className="flex items-end gap-2">
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="w-full p-2 rounded-lg bg-gray-900 text-white border border-gray-700"
+            />
+
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="w-full p-2 rounded-lg bg-gray-900 text-white border border-gray-700"
+            />
+
+            <div className="flex gap-2">
               <button
                 onClick={handleFilter}
-                className="flex-1 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
+                className="flex-1 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition"
               >
                 Apply
               </button>
               <button
                 onClick={resetFilter}
-                className="flex-1 bg-gray-300 py-2 rounded-lg hover:bg-gray-400 transition"
+                className="flex-1 bg-gray-700 text-gray-200 py-2 rounded-lg hover:bg-gray-600 transition"
               >
                 Reset
               </button>
@@ -91,46 +89,52 @@ const GroceryTablePage = () => {
           </div>
         </div>
 
-        {/* Responsive View */}
+        {/* Data */}
         {groceries.length === 0 ? (
-          <p className="text-center py-10 text-gray-500">No grocery items found 🥲</p>
+          <p className="text-center py-10 text-gray-400">
+            No grocery items found 🥲
+          </p>
         ) : (
           <>
             {/* Desktop Table */}
             <div className="hidden sm:block overflow-x-auto mb-6">
-              <table className="min-w-full border border-gray-300 rounded-xl overflow-hidden">
-                <thead className="bg-indigo-600 text-white">
+              <table className="min-w-full border border-gray-700 rounded-xl overflow-hidden">
+                <thead className="bg-purple-700 text-white">
                   <tr>
                     <th className="px-4 py-3 text-left">Name</th>
-                    <th className="px-4 py-3 text-left">Quantity</th>
+                    <th className="px-4 py-3 text-left">Qty</th>
                     <th className="px-4 py-3 text-left">Cost (₹)</th>
                     <th className="px-4 py-3 text-left">Category</th>
                     <th className="px-4 py-3 text-left">Added On</th>
                   </tr>
                 </thead>
-                <tbody>
+
+                <tbody className="bg-gray-900">
                   {groceries.map((item) => (
                     <tr
                       key={item.id}
-                      className="border-b hover:bg-indigo-50 transition"
+                      className="border-b border-gray-700 hover:bg-gray-800 transition"
                     >
-                      <td className="px-4 py-3 font-medium">{item.name}</td>
-                      <td className="px-4 py-3">{item.quantity}</td>
-                      <td className="px-4 py-3">₹{item.cost}</td>
-                      <td className="px-4 py-3">{item.category || "Uncategorized"}</td>
+                      <td className="px-4 py-3 text-white">{item.name}</td>
+                      <td className="px-4 py-3 text-gray-300">{item.quantity}</td>
+                      <td className="px-4 py-3 text-gray-300">₹{item.cost}</td>
+                      <td className="px-4 py-3 text-gray-400">
+                        {item.category || "Uncategorized"}
+                      </td>
                       <td className="px-4 py-3 text-sm text-gray-500">
                         {new Date(item.created_at).toLocaleDateString()}
                       </td>
                     </tr>
                   ))}
                 </tbody>
-                <tfoot>
-                  <tr className="bg-purple-50 font-semibold">
+
+                <tfoot className="bg-gray-800 text-purple-300 font-semibold">
+                  <tr>
                     <td className="px-4 py-3">Total Items</td>
                     <td className="px-4 py-3">{totalItems}</td>
                     <td className="px-4 py-3">₹{totalPrice}</td>
                     <td className="px-4 py-3" colSpan={2}>
-                      : Filtered Total Price
+                      Filtered Total
                     </td>
                   </tr>
                 </tfoot>
@@ -142,17 +146,21 @@ const GroceryTablePage = () => {
               {groceries.map((item) => (
                 <div
                   key={item.id}
-                  className="p-4 bg-white rounded-2xl shadow-md border flex flex-col"
+                  className="p-4 bg-gray-800 border border-gray-700 rounded-2xl shadow"
                 >
-                  <div className="flex justify-between mb-2">
-                    <p className="font-semibold text-gray-800">{item.name}</p>
-                    <p className="text-gray-600">{item.category || "Uncategorized"}</p>
+                  <div className="flex justify-between items-center mb-2">
+                    <p className="font-semibold text-white">{item.name}</p>
+                    <span className="text-xs text-purple-400">
+                      {item.category || "Uncategorized"}
+                    </span>
                   </div>
-                  <div className="flex justify-between text-gray-600">
+
+                  <div className="flex justify-between text-gray-300">
                     <p>Qty: {item.quantity}</p>
                     <p>₹{item.cost}</p>
                   </div>
-                  <p className="text-sm text-gray-400 mt-2">
+
+                  <p className="text-xs text-gray-500 mt-2">
                     Added: {new Date(item.created_at).toLocaleDateString()}
                   </p>
                 </div>
@@ -164,7 +172,7 @@ const GroceryTablePage = () => {
         <div className="text-center mt-8">
           <a
             href="/grocery"
-            className="px-6 py-3 bg-purple-600 text-white rounded-xl shadow hover:bg-purple-700 transition"
+            className="inline-block px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition shadow-lg"
           >
             ⬅ Back to Grocery Page
           </a>
