@@ -11,6 +11,20 @@ const ExpensePage = () => {
   });
   const [editExpense, setEditExpense] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const getLocalDate = (dateValue) => {
+    const d = new Date(dateValue);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const todayDate = getLocalDate(new Date());
+
+  const todaysExpenses = expenses.filter(
+    (exp) => getLocalDate(new Date(exp.date)) === todayDate
+  );
+
 
   // Fetch expenses
   const fetchExpenses = () => {
@@ -85,7 +99,6 @@ const ExpensePage = () => {
       console.error(err);
     }
   };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-indigo-200 p-4 sm:p-8">
       <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-md border border-gray-200 rounded-2xl shadow-xl p-6 sm:p-10">
@@ -99,7 +112,7 @@ const ExpensePage = () => {
             className="bg-indigo-600 text-white px-5 py-2 rounded-xl shadow-md hover:bg-indigo-700 transition font-semibold"
           >
             📊 View all your expense and grocery analytics in one place.
-          </Link>
+          </Link> 
         </div>
         {/* Add Form */}
         <form
@@ -148,40 +161,46 @@ const ExpensePage = () => {
           </button>
         </form>
 
-        {/* Expense Cards */}
+         {/* Today's Expense Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {expenses.map((exp) => (
-            <div
-              key={exp.id}
-              className="bg-indigo-50 border border-indigo-200 p-4 rounded-xl shadow hover:shadow-lg transition"
-            >
-              <h2 className="font-semibold text-xl text-indigo-900">
-                {exp.title}
-              </h2>
+          {todaysExpenses.length === 0 ? (
+            <p className="sm:col-span-2 text-center text-gray-500 font-semibold">
+              No expenses added today 🫤
+            </p>
+          ) : (
+            todaysExpenses.map((exp) => (
+              <div
+                key={exp.id}
+                className="bg-indigo-50 border p-4 rounded-xl shadow"
+              >
+                <h2 className="font-semibold text-xl">{exp.title}</h2>
 
-              <p className="text-gray-700 mt-1">
-                <span className="font-bold text-indigo-700">₹{exp.amount}</span>{" "}
-                • {exp.category || "Uncategorized"}
-              </p>
+                <p className="mt-1">
+                  <span className="font-bold text-indigo-700">
+                    ₹{exp.amount}
+                  </span>{" "}
+                  • {exp.category || "Uncategorized"}
+                </p>
 
-              <p className="text-gray-500 text-sm mt-1">{exp.date}</p>
+                <p className="text-sm text-gray-500">{exp.date}</p>
 
-              <div className="mt-4 flex gap-2">
-                <button
-                  onClick={() => handleEdit(exp)}
-                  className="flex-1 bg-yellow-400 text-white p-2 rounded-lg hover:bg-yellow-500 transition"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(exp.id)}
-                  className="flex-1 bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition"
-                >
-                  Delete
-                </button>
+                <div className="mt-4 flex gap-2">
+                  <button
+                    onClick={() => handleEdit(exp)}
+                    className="flex-1 bg-yellow-400 text-white p-2 rounded-lg"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(exp.id)}
+                    className="flex-1 bg-red-500 text-white p-2 rounded-lg"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 
