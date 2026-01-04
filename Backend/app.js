@@ -46,6 +46,6 @@ app.get("/", (req, res) => {
 });
 
 // (Later we'll add: app.use("/api/expenses", expenseRoutes))
-
+//made chnage in vercel
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
