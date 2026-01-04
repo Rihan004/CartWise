@@ -25,7 +25,7 @@ const MonthlyTrends = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/analytics/expenses/trends/monthly", {
+      .get(`${import.meta.env.VITE_API_BASE_URL}/api/analytics/expenses/trends/monthly`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

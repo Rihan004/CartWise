@@ -29,7 +29,7 @@ const ExpensePage = () => {
 
   const fetchExpenses = () => {
     axios
-      .get("http://localhost:5000/api/expenses", {
+      .get(`${import.meta.env.VITE_API_BASE_URL}/api/expenses`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -45,7 +45,7 @@ const ExpensePage = () => {
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/expenses", form, {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/expenses`, form, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -59,7 +59,7 @@ const ExpensePage = () => {
 
   const handleDelete = async (id) => {
     if (window.confirm("Delete this expense?")) {
-      await axios.delete(`http://localhost:5000/api/expenses/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/expenses/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -76,7 +76,7 @@ const ExpensePage = () => {
   const handleSaveEdit = async () => {
     try {
       await axios.put(
-        `http://localhost:5000/api/expenses/${editExpense.id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/expenses/${editExpense.id}`,
         editExpense,
         {
           headers: {

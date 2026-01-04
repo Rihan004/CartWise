@@ -12,7 +12,7 @@ const GroceryPage = () => {
   const fetchGroceries = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/groceries/today",
+        `${import.meta.env.VITE_API_BASE_URL}/api/groceries/today`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -36,7 +36,7 @@ const GroceryPage = () => {
   const handleDelete = async (id) => {
     try {
       await axios.delete(
-        `http://localhost:5000/api/groceries/${id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/groceries/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

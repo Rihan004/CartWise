@@ -14,7 +14,7 @@ const CategorySummary = () => {
     const fetchData = async () => {
       try {
         const expensesRes = await axios.get(
-          "http://localhost:5000/api/analytics/expenses/category-summary",
+          `${import.meta.env.VITE_API_BASE_URL}/api/analytics/expenses/category-summary`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -23,7 +23,7 @@ const CategorySummary = () => {
         );
 
         const groceriesRes = await axios.get(
-          "http://localhost:5000/api/analytics/groceries/category-summary",
+          `${import.meta.env.VITE_API_BASE_URL}/api/analytics/groceries/category-summary`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 

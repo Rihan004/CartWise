@@ -11,14 +11,14 @@ const MonthlyTotal = () => {
       const token = localStorage.getItem("token");
 
       const expenseRes = await axios.get(
-        `http://localhost:5000/api/analytics/expenses/total/monthly?month=${month}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/analytics/expenses/total/monthly?month=${month}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       const groceryRes = await axios.get(
-        `http://localhost:5000/api/analytics/groceries/total/monthly?month=${month}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/analytics/groceries/total/monthly?month=${month}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

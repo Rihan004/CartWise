@@ -8,7 +8,7 @@ export default function Register() {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/auth/local/register",
+        `${import.meta.env.VITE_API_BASE_URL}/api/auth/local/register`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -29,7 +29,7 @@ export default function Register() {
   };
 
   const handleGoogleSignup = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
+    window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/auth/google`;
   };
 
   return (

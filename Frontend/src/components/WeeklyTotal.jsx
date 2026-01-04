@@ -12,11 +12,11 @@ const WeeklyTotal = () => {
 
       const [expenseRes, groceryRes] = await Promise.all([
         axios.get(
-          `http://localhost:5000/api/analytics/expenses/total/weekly?week=${week}`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/analytics/expenses/total/weekly?week=${week}`,
           { headers: { Authorization: `Bearer ${token}` } }
         ),
         axios.get(
-          `http://localhost:5000/api/analytics/groceries/total/weekly?week=${week}`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/analytics/groceries/total/weekly?week=${week}`,
           { headers: { Authorization: `Bearer ${token}` } }
         ),
       ]);

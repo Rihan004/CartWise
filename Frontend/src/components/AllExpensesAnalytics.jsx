@@ -15,7 +15,7 @@ const AllExpensesAnalytics = () => {
 
   const fetchExpenses = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/expenses", {
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/expenses`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
