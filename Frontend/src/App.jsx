@@ -12,7 +12,7 @@ import AnalyticsPage from "./pages/AnalyticsPage";
 function Layout({ children }) {
   const location = useLocation();
 
-  // Pages where navbar should be hidden
+  // Pages where navbar should be hidden lets go
   const hideNavbar = ["/login", "/auth/success", "/register"];
 
   return (
