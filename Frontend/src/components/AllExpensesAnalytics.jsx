@@ -12,6 +12,10 @@ const AllExpensesAnalytics = () => {
   useEffect(() => {
     fetchExpenses();
   }, []);
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB"); // dd/mm/yyyy
+  };
 
   const fetchExpenses = async () => {
     try {
@@ -124,7 +128,7 @@ const AllExpensesAnalytics = () => {
               </p>
 
               <p className="mt-1 text-sm text-gray-500">
-                📅 {exp.date}
+                📅 {formatDate(exp.date)}
               </p>
             </div>
           ))}
