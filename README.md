@@ -12,6 +12,24 @@ A full-stack, production-ready **Expense & Grocery Tracking application** with *
 ---
 ## 📸 Screenshots
 
+### 🔐 Login
+<img width="100%" alt="Login Page" src="https://github.com/user-attachments/assets/9b01cc05-3ddc-4f74-a1df-b70dd1ab4098" />
+
+### 💰 Expense Page
+<img width="100%" alt="Expense Page" src="https://github.com/user-attachments/assets/40421978-c22a-4486-86cf-0263b5fe78a6" />
+
+### 📊 Expense Distribution (Pie Chart)
+<img width="100%" alt="Pie Chart" src="https://github.com/user-attachments/assets/b4380ecb-a898-4d79-91b6-b427837c215b" />
+
+### 📋 All Expenses
+<img width="100%" alt="All Expenses" src="https://github.com/user-attachments/assets/2cea899e-5182-418f-b24f-67e9deb58d1e" />
+
+### 🛒 Groceries Category
+<img width="100%" alt="Groceries" src="https://github.com/user-attachments/assets/27127a61-4685-4126-93a4-a8fa6dfb7dfe" />
+
+### 🤖 AI Recommendations
+<img width="100%" alt="AI Recommendations" src="https://github.com/user-attachments/assets/a93086fb-0c4f-4a3e-8b64-943957569cbd" />
+
 
 ## 🧠 Key Features
 
